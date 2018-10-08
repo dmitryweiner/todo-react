@@ -18,9 +18,9 @@ class TodoItem extends Component {
                 {this.props.completeDate &&
                 <p className="card-text"><strong>Due date:</strong>{this.props.completeDate.toLocaleDateString()}</p>
                 }
-                <Link className="btn btn-primary" to={"/edit/" + this.props.id}>Edit</Link>
+                <Link className="btn btn-primary btn-sm" to={"/edit/" + this.props.id}>Edit</Link>
                 &nbsp;
-                <Link className="btn btn-danger" to={"/delete/" + this.props.id}>Delete</Link>
+                <Link className="btn btn-danger btn-sm" to={"/delete/" + this.props.id}>Delete</Link>
             </div>
         </div>;
     }
