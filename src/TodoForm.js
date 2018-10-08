@@ -83,8 +83,8 @@ class TodoForm extends Component {
                     <label className="col-sm-2 col-form-label">Due date</label>
                     <div className="col-sm-10">
                     <DatePicker
-                        selected={this.state.dueDate}
-                        onChange={(date) => this.setState({dueDate: date})}
+                        selected={moment(this.state.dueDate)}
+                        onChange={(date) => this.setState({dueDate: date.format()})}
                         className="form-control"
                     />
                     </div>
