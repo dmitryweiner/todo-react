@@ -45,7 +45,13 @@ class TodoList extends Component {
      * @returns {number}
      */
     sortItems(item1, item2) {
+        const priorityRange = ["regular", "important", "asap"];
+
         let dueDate1, dueDate2;
+
+        if (item1.priority !== item2.priority) {
+            return priorityRange.indexOf(item2.priority) - priorityRange.indexOf(item1.priority);
+        }
 
         if (item1.completeDate && !item2.completeDate) {
             return 1;

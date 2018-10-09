@@ -34,6 +34,13 @@ class TodoForm extends Component {
         store.setItem(this.state.item);
     }
 
+    handleUncompleteButton(e) {
+        const {item} = this.state;
+        item.completeDate = null;
+        store.setItem(item);
+
+    }
+
     /**
      * @param {string} inputName
      * @param {*} value
@@ -116,7 +123,7 @@ class TodoForm extends Component {
                     <div className="col-sm-10">
                     <DatePicker
                         value={item.dueDate ? new Date(item.dueDate).toLocaleDateString() : ""}
-                        onSelect={(date) =>  this.handleInputChange("dueDate", date.format())}
+                        onSelect={(date) =>  this.handleInputChange("dueDate", date ? date.format() : null)}
                         className="form-control"
                     />
                     </div>
@@ -124,6 +131,10 @@ class TodoForm extends Component {
                 <div className="col-sm-10">
                     <Link className="btn btn-info" to="/">Cancel</Link>
                     &nbsp;
+                    {item.completeDate ? ([
+                        <Link className="btn btn-secondary" to="/" onClick={this.handleUncompleteButton.bind(this)}>Mark uncomplete</Link>,
+                        <span key={2}>&nbsp;</span>
+                    ]) : null}
                     <Link className="btn btn-success" to="/" onClick={this.handleSaveButton.bind(this)}>Submit</Link>
                 </div>
             </fieldset>

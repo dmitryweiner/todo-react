@@ -32,26 +32,26 @@ class TodoItem extends Component {
         </div>;
     }
 
-    renderCardBorder() {
+    renderCardStyle() {
         const {item} = this.props;
 
         //task complete
         if (item.completeDate) {
-            return 'border-success';
+            return 'bg-light';
         }
 
         //task expired
         if (moment().diff(moment(item.dueDate), "days") >= 1) {
-            return 'border-danger';
+            return 'border-danger text-white bg-primary ';
         }
 
-        return '';
+        return 'text-white bg-secondary';
     }
 
     render() {
         const {item} = this.props;
 
-        return <div className={"card mb-3 " + this.renderCardBorder()}>
+        return <div className={"card mb-3 " + this.renderCardStyle()}>
             <div className="card-body">
                 <h4 className="card-title">
                     {item.title}&nbsp;
