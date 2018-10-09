@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import PriorityBage from "./PriorityBage";
 import {Link} from "react-router-dom";
 import {store} from "./Store";
+import moment from "moment";
 
 class TodoItem extends Component {
 
@@ -33,11 +34,14 @@ class TodoItem extends Component {
 
     renderCardBorder() {
         const {item} = this.props;
+
+        //task complete
         if (item.completeDate) {
             return 'border-success';
         }
 
-        if (item.dueDate && new Date(item.dueDate) < new Date()) {
+        //task expired
+        if (moment().diff(moment(item.dueDate), "days") >= 1) {
             return 'border-danger';
         }
 

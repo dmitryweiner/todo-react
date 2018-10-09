@@ -8,8 +8,47 @@ class TodoList extends Component {
         super(props);
 
         this.state = {
-             items: store.getItems()
+             items: store.getItems().sort(this.sortItems)
         };
+    }
+
+    /**
+     * @param {object} item1
+     * @param {object} item2
+     * @returns {number}
+     */
+    sortItems(item1, item2) {
+        let dueDate1, dueDate2;
+
+        if (item1.completeDate && !item2.completeDate) {
+            return 1;
+        }
+
+        if (!item1.completeDate && item2.completeDate) {
+            return -1;
+        }
+
+        if (item1.dueDate && !item2.dueDate) {
+            return -1;
+        }
+
+        if (!item1.dueDate && item2.dueDate) {
+            return 1;
+        }
+
+        if (item1.dueDate && item2.dueDate) {
+            dueDate1 = new Date(item1.dueDate);
+            dueDate2 = new Date(item2.dueDate);
+            if (dueDate1 < dueDate2) {
+                return -1;
+            }
+            if (dueDate2 < dueDate1) {
+                return 1;
+            }
+        }
+
+
+        return 0;
     }
 
     componentWillMount() {
@@ -22,7 +61,7 @@ class TodoList extends Component {
 
     handleStoreUpdate() {
         this.setState({
-            items: store.getItems()
+            items: store.getItems().sort(this.sortItems)
         });
     }
 
