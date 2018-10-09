@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import TodoItem from "./TodoItem";
+import {store} from "./Store";
 
 class TodoList extends Component {
 
@@ -7,41 +8,33 @@ class TodoList extends Component {
         super(props);
 
         this.state = {
-            elements: [
-                {
-                    id: 1,
-                    title: "Title 1",
-                    description: "Description 1",
-                    priority: "asap",
-                    dueDate: new Date(),
-                    completeDate: new Date()
-                },
-                {
-                    id: 2,
-                    title: "Title 2",
-                    description: "Description 2",
-                    priority: "important"
-                },
-                {
-                    id: 3,
-                    title: "Title 3",
-                    description: "Description 3",
-                    priority: "regular"
-                },
-                {
-                    id: 4,
-                    title: "Title 4",
-                    description: "Description 4",
-                    priority: "important"
-                },
-                {
-                    id: 5,
-                    title: "Title 5",
-                    description: "Description 5",
-                    priority: "regular"
-                }
-            ]
+             items: store.getItems()
         };
+    }
+
+    componentWillMount() {
+        store.bind('storeUpdate', this.handleStoreUpdate.bind(this));
+    }
+
+    componentWillUnmount() {
+        store.unbind('storeUpdate', this.handleStoreUpdate);
+    }
+
+    handleStoreUpdate() {
+        this.setState({
+            items: store.getItems()
+        });
+    }
+
+    renderList() {
+        const {items} = this.state;
+        if (items.length) {
+            return <div className="card-columns">
+                {items.map((element, index) => <div key={index}><TodoItem item={element}/></div>)}
+            </div>;
+        }
+
+        return <div className="alert alert-light">No records found. Create some items first!</div>
     }
 
     render() {
@@ -59,9 +52,7 @@ class TodoList extends Component {
                     <button type="button" className="btn btn-danger btn-sm">ASAP</button>
                 </div>
             </div>
-            <div className="card-columns">
-                {this.state.elements.map((element, index) => <div key={index}><TodoItem {...element}/></div>)}
-            </div>
+            {this.renderList()}
         </div>;
     }
 }

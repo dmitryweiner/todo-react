@@ -1,17 +1,28 @@
 import React, {Component} from "react";
-import PropTypes from "prop-types";
 import {Link} from "react-router-dom";
+import {store} from "./Store";
+import TodoItem from "./TodoItem";
 
 class TodoDeleteDialog extends Component {
 
+    constructor(props) {
+        super(props);
+        this.state = {
+            item: store.getItem(this.props.match.params.id)
+        };
+    }
+
     handleDeleteButton() {
-        console.log('delete id = ', this.props.match.params.id);
+        store.deleteItem(this.props.match.params.id);
     }
 
     render() {
         return <form>
             <fieldset>
                 <legend>Delete item?</legend>
+                <div className="col-sm-10">
+                    <TodoItem item={this.state.item} noButtons={true}/>
+                </div>
                 <div className="col-sm-10">
                     <Link className="btn btn-info" to="/">Cancel</Link>
                     &nbsp;

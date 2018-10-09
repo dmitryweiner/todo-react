@@ -1,44 +1,74 @@
 import React, {Component} from "react";
-import PropTypes from "prop-types";
 import {Link} from "react-router-dom";
 import DatePicker from "react-datepicker";
 import moment from "moment";
-import 'react-datepicker/dist/react-datepicker.css';
+import "react-datepicker/dist/react-datepicker.css";
+import {store} from "./Store";
 
 class TodoForm extends Component {
-
-    getEmptyItem() {
-        return {
-            title: "",
-            description: "",
-            priority: "regular",
-        }
-    }
 
     constructor(props) {
         super(props);
 
-        if (this.props.match.params.id) {
-            //TODO: here should be loading from store
-            this.state = {
-                id: 1,
-                title: "Title 1",
-                description: "Description 1",
-                priority: "asap",
-                dueDate: new Date(),
-                completeDate: new Date()
-            };
-        } else {
-            this.state = this.getEmptyItem();
-        }
+        const item = this.props.match.params.id
+            ? store.getItem(this.props.match.params.id)
+            : store.getEmptyItem();
+        this.state = {
+            item: item,
+            changed: false
+        };
 
     }
 
     handleSaveButton(e) {
-        console.log("saving", this.state);
+
+        this.setState({
+            changed: true
+        });
+
+        if (!this.isFormValid()) {
+            e.preventDefault();
+            return false;
+        }
+
+        store.setItem(this.state.item);
+    }
+
+    /**
+     * @param {string} inputName
+     * @param {*} value
+     */
+    handleInputChange(inputName, value) {
+        const {item} = this.state;
+        item[inputName] = value;
+        this.setState({
+            item: item,
+            changed: true
+        });
+    }
+
+    isFormValid() {
+        const {item} = this.state;
+        return item.title.length > 0 && item.description.length > 0;
+    }
+
+    /**
+     * @param {string} inputName
+     * @returns {boolean}
+     */
+    isValid(inputName) {
+        const {item} = this.state;
+
+        if (!this.state.changed) {
+            return true;
+        }
+
+        return item[inputName].length > 0;
     }
 
     render() {
+        const {item} = this.state;
+
         return <form>
             <fieldset>
                 <legend>{this.props.match.params.id ? "Edit" : "Create"} item</legend>
@@ -46,11 +76,12 @@ class TodoForm extends Component {
                     <label className="col-sm-2 col-form-label">Title</label>
                     <div className="col-sm-10">
                         <input
+                            required={true}
                             type="text"
-                            className="form-control"
+                            className={"form-control " + (this.isValid("title") ? "" : "is-invalid")}
                             placeholder="Title"
-                            value={this.state.title}
-                            onChange={(e) => this.setState({title: e.target.value})}
+                            value={item.title}
+                            onChange={(e) => this.handleInputChange("title", e.target.value)}
                         />
                     </div>
                 </div>
@@ -58,11 +89,12 @@ class TodoForm extends Component {
                     <label className="col-sm-2 col-form-label">Description</label>
                     <div className="col-sm-10">
                         <input
+                            required={true}
                             type="text"
-                            className="form-control"
+                            className={"form-control " + (this.isValid("description") ? "" : "is-invalid")}
                             placeholder="Description"
-                            value={this.state.description}
-                            onChange={(e) => this.setState({description: e.target.value})}
+                            value={item.description}
+                            onChange={(e) => this.handleInputChange("description", e.target.value)}
                         />
                     </div>
                 </div>
@@ -70,9 +102,9 @@ class TodoForm extends Component {
                     <label className="col-sm-2 col-form-label">Priority</label>
                     <div className="col-sm-10">
                         <select
-                            value={this.state.priority}
+                            value={item.priority}
                             className="form-control"
-                            onChange={(e) => this.setState({priority: e.target.value})}>
+                            onChange={(e) => this.handleInputChange("priority", e.target.value)}>
                             <option value="regular">Regular</option>
                             <option value="important">Important</option>
                             <option value="asap">ASAP</option>
@@ -83,8 +115,8 @@ class TodoForm extends Component {
                     <label className="col-sm-2 col-form-label">Due date</label>
                     <div className="col-sm-10">
                     <DatePicker
-                        selected={moment(this.state.dueDate)}
-                        onChange={(date) => this.setState({dueDate: date.format()})}
+                        value={item.dueDate ? new Date(item.dueDate).toLocaleDateString() : ""}
+                        onSelect={(date) =>  this.handleInputChange("dueDate", date.format())}
                         className="form-control"
                     />
                     </div>
@@ -92,15 +124,11 @@ class TodoForm extends Component {
                 <div className="col-sm-10">
                     <Link className="btn btn-info" to="/">Cancel</Link>
                     &nbsp;
-                    <Link className="btn btn-success" to="/" onClick={() => this.handleSaveButton()}>Submit</Link>
+                    <Link className="btn btn-success" to="/" onClick={this.handleSaveButton.bind(this)}>Submit</Link>
                 </div>
             </fieldset>
         </form>
     }
 }
-
-TodoForm.propTypes = {
-    id: PropTypes.number
-};
 
 export default TodoForm;
