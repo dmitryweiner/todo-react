@@ -2,6 +2,7 @@ import React, {Component} from "react";
 import TodoItem from "./TodoItem";
 import {store} from "./Store";
 import DisplayFilter from "./DisplayFilter";
+import {Link} from "react-router-dom";
 
 class TodoList extends Component {
 
@@ -110,7 +111,9 @@ class TodoList extends Component {
             </div>;
         }
 
-        return <div className="alert alert-light">No records found. Create some items first!</div>
+        return <div className="alert alert-light">
+            No records found. <Link className="nav-item" to="/create">Create</Link> some items first!
+        </div>
     }
 
     render() {
