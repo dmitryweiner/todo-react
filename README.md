@@ -3,6 +3,7 @@
 This project was created as a simple demonstration of basic React.js features.
 You can create / edit / delete TODO items, mark them complete, filter by priority.
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Working example deployed here: http://todo.dweiner.ru/
 
 ## Prerequisites
 
