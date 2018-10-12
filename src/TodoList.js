@@ -86,7 +86,7 @@ class TodoList extends Component {
     }
 
     componentWillMount() {
-        store.bind('storeUpdate', this.handleStoreUpdate.bind(this));
+        store.bind('storeUpdate', () => this.handleStoreUpdate());
     }
 
     componentWillUnmount() {
@@ -118,7 +118,7 @@ class TodoList extends Component {
 
     render() {
         return <div>
-            <DisplayFilter onChange={this.handleFilterChange.bind(this)}/>
+            <DisplayFilter onChange={() => this.handleFilterChange()}/>
             {this.renderList()}
         </div>;
     }

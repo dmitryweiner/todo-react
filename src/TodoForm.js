@@ -132,10 +132,10 @@ class TodoForm extends Component {
                     <Link className="btn btn-info" to="/">Cancel</Link>
                     &nbsp;
                     {item.completeDate ? ([
-                        <Link className="btn btn-secondary" to="/" onClick={this.handleUncompleteButton.bind(this)}>Mark uncomplete</Link>,
+                        <Link className="btn btn-secondary" to="/" onClick={() => this.handleUncompleteButton()}>Mark uncomplete</Link>,
                         <span key={2}>&nbsp;</span>
                     ]) : null}
-                    <Link className="btn btn-success" to="/" onClick={this.handleSaveButton.bind(this)}>Submit</Link>
+                    <Link className="btn btn-success" to="/" onClick={() => this.handleSaveButton()}>Submit</Link>
                 </div>
             </fieldset>
         </form>
