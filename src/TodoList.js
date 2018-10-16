@@ -1,29 +1,21 @@
 import React, {Component} from "react";
 import TodoItem from "./TodoItem";
-import {store} from "./Store";
 import DisplayFilter from "./DisplayFilter";
 import {Link} from "react-router-dom";
+import {connect} from "react-redux";
 
-class TodoList extends Component {
+const mapStateToProps = state => {
+    return { items: [...state.items] };
+};
+
+class ConnectedTodoList extends Component {
 
     constructor(props) {
         super(props);
 
         this.state = {
-            items: this.processItems(),
             filter: DisplayFilter.DEFAULT_FILTER
         };
-    }
-
-    /**
-     * 1. Get items from store
-     * 2. Sort
-     */
-    processItems() {
-        const items = store
-            .getItems()
-            .sort(this.sortItems);
-        return items;
     }
 
     /**
@@ -50,6 +42,7 @@ class TodoList extends Component {
 
         let dueDate1, dueDate2;
 
+        console.log(item1, item2);
         if (item1.priority !== item2.priority) {
             return priorityRange.indexOf(item2.priority) - priorityRange.indexOf(item1.priority);
         }
@@ -85,29 +78,17 @@ class TodoList extends Component {
         return 0;
     }
 
-    componentWillMount() {
-        store.bind('storeUpdate', () => this.handleStoreUpdate());
-    }
-
-    componentWillUnmount() {
-        store.unbind('storeUpdate', this.handleStoreUpdate);
-    }
-
-    handleStoreUpdate() {
-        this.setState({
-            items: this.processItems()
-        });
-    }
-
     handleFilterChange(filter) {
         this.setState({filter: filter});
     }
 
     renderList() {
-        const items = this.filterItems(this.state.items);
+        const items = this.filterItems([...this.props.items].sort(this.sortItems));
         if (items.length) {
             return <div className="card-columns">
-                {items.map((element, index) => <div key={index}><TodoItem item={element}/></div>)}
+                {items.map((element, index) => <div key={index}>
+                    <TodoItem item={element}/></div>
+                )}
             </div>;
         }
 
@@ -118,10 +99,12 @@ class TodoList extends Component {
 
     render() {
         return <div>
-            <DisplayFilter onChange={() => this.handleFilterChange()}/>
+            <DisplayFilter onChange={(filter) => this.handleFilterChange(filter)}/>
             {this.renderList()}
         </div>;
     }
 }
+
+const TodoList = connect(mapStateToProps)(ConnectedTodoList);
 
 export default TodoList;

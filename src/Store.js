@@ -1,5 +1,3 @@
-import MicroEvent from './helpers/microevent';
-
 /* Interface for local storage*/
 class Store {
 
@@ -11,7 +9,6 @@ class Store {
         if (typeof window["localStorage"] === "undefined") {
             throw new Error("No local storage found in current browser!");
         }
-        MicroEvent.mixin(this);
     }
 
     /**
@@ -48,16 +45,6 @@ class Store {
             items = [];
         }
 
-        // need to convert string to date
-        items.map((element) => {
-            if (typeof element['dueDate'] !== 'undefined' && element.dueDate) {
-                element.dueDate = new Date(element.dueDate);
-            }
-            if (typeof element['completeDate'] !== 'undefined' && element.completeDate) {
-                element.completeDate = new Date(element.completeDate);
-            }
-            return element;
-        });
         return items;
     }
 
@@ -69,7 +56,6 @@ class Store {
             throw new Error("Parameter should be an array!");
         }
         window.localStorage.setItem(Store.KEY, JSON.stringify(items));
-        this.trigger('storeUpdate');
     }
 
     /**

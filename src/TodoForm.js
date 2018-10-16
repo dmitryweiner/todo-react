@@ -3,21 +3,42 @@ import {Link} from "react-router-dom";
 import DatePicker from "react-datepicker";
 import moment from "moment";
 import "react-datepicker/dist/react-datepicker.css";
-import {store} from "./Store";
+import {connect} from "react-redux";
+import {addItem, updateItem} from "./redux/actions";
 
-class TodoForm extends Component {
+const mapStateToProps = (state, ownProps) => {
+    const item = state.items.find(element => element.id === ownProps.match.params.id);
+    return {item: {...item}}; // NOTE: this ... is necessary for rerender
+};
+
+const mapDispatchToProps = dispatch => {
+    return {
+        addItem: item => dispatch(addItem(item)),
+        updateItem: item => dispatch(updateItem(item))
+    };
+};
+
+class ConnectedTodoForm extends Component {
 
     constructor(props) {
         super(props);
 
         const item = this.props.match.params.id
-            ? store.getItem(this.props.match.params.id)
-            : store.getEmptyItem();
+            ? this.props.item
+            : this.getEmptyItem();
         this.state = {
             item: item,
             changed: false
         };
 
+    }
+
+    getEmptyItem() {
+        return {
+            title: "",
+            description: "",
+            priority: "regular",
+        }
     }
 
     handleSaveButton(e) {
@@ -31,14 +52,17 @@ class TodoForm extends Component {
             return false;
         }
 
-        store.setItem(this.state.item);
+        if (this.props.match.params.id) {
+            this.props.updateItem(this.state.item);
+        } else {
+            this.props.addItem(this.state.item);
+        }
     }
 
     handleUncompleteButton(e) {
         const {item} = this.state;
         item.completeDate = null;
-        store.setItem(item);
-
+        this.props.updateItem(item);
     }
 
     /**
@@ -70,7 +94,22 @@ class TodoForm extends Component {
             return true;
         }
 
-        return item[inputName].length > 0;
+        return typeof item[inputName] !== 'undefined'
+            ? item[inputName].length > 0
+            : true;
+    }
+
+    renderInput(inputName) {
+        const {item} = this.state;
+        if (typeof item[inputName] === 'undefined') {
+            item[inputName] = '';
+        }
+        return <input
+            type="text"
+            className={"form-control " + (this.isValid(inputName) ? "" : "is-invalid")}
+            placeholder="Title"
+            value={item[inputName]}
+            onChange={(e) => this.handleInputChange(inputName, e.target.value)}/>;
     }
 
     render() {
@@ -82,27 +121,13 @@ class TodoForm extends Component {
                 <div className="form-group">
                     <label className="col-sm-2 col-form-label">Title</label>
                     <div className="col-sm-10">
-                        <input
-                            required={true}
-                            type="text"
-                            className={"form-control " + (this.isValid("title") ? "" : "is-invalid")}
-                            placeholder="Title"
-                            value={item.title}
-                            onChange={(e) => this.handleInputChange("title", e.target.value)}
-                        />
+                        {this.renderInput('title')}
                     </div>
                 </div>
                 <div className="form-group">
                     <label className="col-sm-2 col-form-label">Description</label>
                     <div className="col-sm-10">
-                        <input
-                            required={true}
-                            type="text"
-                            className={"form-control " + (this.isValid("description") ? "" : "is-invalid")}
-                            placeholder="Description"
-                            value={item.description}
-                            onChange={(e) => this.handleInputChange("description", e.target.value)}
-                        />
+                        {this.renderInput('description')}
                     </div>
                 </div>
                 <div className="form-group">
@@ -132,14 +157,16 @@ class TodoForm extends Component {
                     <Link className="btn btn-info" to="/">Cancel</Link>
                     &nbsp;
                     {item.completeDate ? ([
-                        <Link className="btn btn-secondary" to="/" onClick={() => this.handleUncompleteButton()}>Mark uncomplete</Link>,
+                        <Link key={1} className="btn btn-secondary" to="/" onClick={(e) => this.handleUncompleteButton(e)}>Mark uncomplete</Link>,
                         <span key={2}>&nbsp;</span>
                     ]) : null}
-                    <Link className="btn btn-success" to="/" onClick={() => this.handleSaveButton()}>Submit</Link>
+                    <Link className="btn btn-success" to="/" onClick={(e) => this.handleSaveButton(e)}>Submit</Link>
                 </div>
             </fieldset>
         </form>
     }
 }
+
+const TodoForm = connect(mapStateToProps, mapDispatchToProps)(ConnectedTodoForm);
 
 export default TodoForm;

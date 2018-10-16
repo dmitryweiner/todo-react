@@ -2,15 +2,27 @@ import React, {Component} from "react";
 import PropTypes from "prop-types";
 import PriorityBage from "./PriorityBage";
 import {Link} from "react-router-dom";
-import {store} from "./Store";
 import moment from "moment";
+import {updateItem} from "./redux/actions";
+import {connect} from "react-redux";
 
-class TodoItem extends Component {
+const mapStateToProps = (state, ownProps) => {
+    const item = state.items.find(element => element.id === ownProps.item.id);
+    return {item: {...item}}; // NOTE: this ... is necessary for rerender
+};
+
+const mapDispatchToProps = dispatch => {
+    return {
+        updateItem: item => dispatch(updateItem(item)),
+    };
+};
+
+class ConnectedTodoItem extends Component {
 
     handleCompleteButton() {
-        const item = store.getItem(this.props.item.id);
-        item.completeDate = new Date();
-        store.setItem(item);
+        const {item} = this.props;
+        item.completeDate = new Date().toISOString();
+        this.props.updateItem(item);
     }
 
     renderButtons() {
@@ -59,10 +71,10 @@ class TodoItem extends Component {
                 </h4>
                 <p className="card-text">{item.description}</p>
                 {item.dueDate &&
-                    <p className="card-text"><strong>Due date:</strong>{item.dueDate.toLocaleDateString()}</p>
+                    <p className="card-text"><strong>Due date:</strong>{new Date(item.dueDate).toLocaleDateString()}</p>
                 }
                 {item.completeDate &&
-                    <p className="card-text"><strong>Complete date:</strong>{item.completeDate.toLocaleDateString()}</p>
+                    <p className="card-text"><strong>Complete date:</strong>{new Date(item.completeDate).toLocaleDateString()}</p>
                 }
                 {this.renderButtons()}
             </div>
@@ -71,20 +83,22 @@ class TodoItem extends Component {
 
 }
 
-TodoItem.defaultProps = {
+ConnectedTodoItem.defaultProps = {
     noButtons: false
 };
 
-TodoItem.propTypes = {
+ConnectedTodoItem.propTypes = {
     item: PropTypes.shape({
         id: PropTypes.string.isRequired,
         title: PropTypes.string.isRequired,
         description: PropTypes.string.isRequired,
         priority: PropTypes.oneOf(["regular", "important", "asap"]).isRequired,
-        dueDate: PropTypes.instanceOf(Date),
-        completeDate: PropTypes.instanceOf(Date)
+        dueDate: PropTypes.string,
+        completeDate: PropTypes.string
     }).isRequired,
     noButtons: PropTypes.bool
 };
+
+const TodoItem = connect(mapStateToProps, mapDispatchToProps)(ConnectedTodoItem);
 
 export default TodoItem;

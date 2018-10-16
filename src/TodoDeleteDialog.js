@@ -1,27 +1,32 @@
 import React, {Component} from "react";
 import {Link} from "react-router-dom";
-import {store} from "./Store";
 import TodoItem from "./TodoItem";
+import {connect} from "react-redux";
+import {removeItem} from "./redux/actions";
 
-class TodoDeleteDialog extends Component {
+const mapStateToProps = (state, ownProps) => {
+    const item = state.items.find(element => element.id === ownProps.match.params.id);
+    return { item: item};
+};
+const mapDispatchToProps = dispatch => {
+    return {
+        removeItem: id => dispatch(removeItem(id))
+    };
+};
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            item: store.getItem(this.props.match.params.id)
-        };
-    }
+class ConnectedTodoDeleteDialog extends Component {
 
     handleDeleteButton() {
-        store.deleteItem(this.props.match.params.id);
+        this.props.removeItem(this.props.match.params.id);
     }
 
     render() {
+        const {item} = this.props;
         return <form>
             <fieldset>
                 <legend>Delete item?</legend>
                 <div className="col-sm-10">
-                    <TodoItem item={this.state.item} noButtons={true}/>
+                    <TodoItem item={item} noButtons={true}/>
                 </div>
                 <div className="col-sm-10">
                     <Link className="btn btn-info" to="/">Cancel</Link>
@@ -32,5 +37,7 @@ class TodoDeleteDialog extends Component {
         </form>
     }
 }
+
+const TodoDeleteDialog = connect(mapStateToProps, mapDispatchToProps)(ConnectedTodoDeleteDialog);
 
 export default TodoDeleteDialog;
