@@ -107,7 +107,7 @@ class ConnectedTodoForm extends Component {
         return <input
             type="text"
             className={"form-control " + (this.isValid(inputName) ? "" : "is-invalid")}
-            placeholder="Title"
+            placeholder={inputName.charAt(0).toUpperCase() + inputName.slice(1)}
             value={item[inputName]}
             onChange={(e) => this.handleInputChange(inputName, e.target.value)}/>;
     }

@@ -42,7 +42,6 @@ class ConnectedTodoList extends Component {
 
         let dueDate1, dueDate2;
 
-        console.log(item1, item2);
         if (item1.priority !== item2.priority) {
             return priorityRange.indexOf(item2.priority) - priorityRange.indexOf(item1.priority);
         }
