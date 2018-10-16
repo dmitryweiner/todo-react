@@ -5,6 +5,12 @@ You can create / edit / delete TODO items, mark them complete, filter by priorit
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 Working example deployed here: http://todo.dweiner.ru/
 
+## Technologies and libraries
+
+* React.js
+* Redux.js
+* Bootstrap 4
+
 ## Prerequisites
 
 * Node.js package manager (npm)
